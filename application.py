@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-app = Flask(__name__)
+application = Flask(__name__)
 
 tasks = [
     {
@@ -16,9 +16,9 @@ tasks = [
     }
 ]
 
-@app.route("/")
+@application.route("/")
 def hello():
     return jsonify({'tasks': tasks})
 
 if __name__ == "__main__":
-    app.run()
+    application.run(host='0.0.0.0')
