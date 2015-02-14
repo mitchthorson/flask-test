@@ -22,11 +22,15 @@ def not_found(error):
 
 @application.route("/", methods=['GET'])
 def hello():
-    return jsonify({'tasks': tasks})
+    print request.headers['Host']
+    resp = make_response(jsonify({'tasks': tasks}))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    # print resp.headers
+    return resp
 
 @application.route("/add", methods=['POST'])
 def create_task():
-    print(request)
+    print request.args.get('key')
     if not request.json or not 'title' in request.json:
         abort(400)
     task = {
@@ -36,7 +40,9 @@ def create_task():
         'done': False
     }
     tasks.append(task)
-    return jsonify({'task': task}), 201
+    resp = make_response(jsonify({'task': task}), 201)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 if __name__ == "__main__":
     application.run(host='0.0.0.0')
