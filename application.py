@@ -8,10 +8,6 @@ db = SQLAlchemy(application)
 
 from models import *
 
-
-print os.environ['APP_SETTINGS']
-
-
 tasks = [
     {
         'id': 1,
