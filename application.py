@@ -1,5 +1,11 @@
 from flask import Flask, jsonify, request, abort, make_response
+import os
+
 application = Flask(__name__)
+application.config.from_object(os.environ['APP_SETTINGS'])
+
+print os.environ['APP_SETTINGS']
+
 
 tasks = [
     {
