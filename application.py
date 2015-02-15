@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, abort, make_response
 import os
+import sys
 from flask.ext.sqlalchemy import SQLAlchemy
 
 application = Flask(__name__)
@@ -7,6 +8,8 @@ application.config.from_object(os.environ['APP_SETTINGS'])
 db = SQLAlchemy(application)
 
 from models import *
+
+
 
 tasks = [
     {
@@ -37,17 +40,22 @@ def hello():
 
 @application.route("/add", methods=['POST'])
 def create_task():
-    print request.args.get('key')
-    if not request.json or not 'title' in request.json:
+    if not request.json or not 'todo_name' in request.json:
         abort(400)
-    task = {
-        'id': tasks[-1]['id'] + 1,
-        'title': request.json['title'],
-        'description': request.json.get('description', ""),
-        'done': False
-    }
-    tasks.append(task)
-    resp = make_response(jsonify({'task': task}), 201)
+    errors = []
+    todo_name = request.json['todo_name']
+
+    try: 
+      todo = Entry(todo_name,False)
+      db.session.add(todo)
+      db.session.commit()
+      print todo
+      resp = make_response(jsonify(todo.serialize()), 201)
+    except NameError as e:
+      print e
+      errors.append("Unable to add items to database")
+      resp = make_response(jsonify({'errors': errors}), 400)
+
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
 
