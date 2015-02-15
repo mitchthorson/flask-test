@@ -38,6 +38,17 @@ def hello():
     # print resp.headers
     return resp
 
+@application.route('/todos', methods=['GET'])
+def get_all():
+    all_records = Entry.query.all()
+    record_list = []
+    for record in all_records:
+      record_obj = record.serialize()
+      record_list.append(record_obj)
+    resp = make_response(jsonify({'todos': record_list}), 200)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
 @application.route("/add", methods=['POST'])
 def create_task():
     if not request.json or not 'todo_name' in request.json:
