@@ -89,7 +89,7 @@ def get_all():
         record_list.append(record_obj)
     return jsonify(({'todos': record_list}));
 
-@application.route("/add", methods=['POST'])
+@application.route("/todos", methods=['POST'])
 @crossdomain(origin='*')
 def create_task():
     if not request.json or not 'todo_name' in request.json:
@@ -107,6 +107,21 @@ def create_task():
         print e
         errors.append("Unable to add items to database")
         return make_response(jsonify({'errors': errors}), 400)
+
+@application.route('/todos/<int:todo_id>', methods=['DELETE'])
+@crossdomain(origin='*')
+def delete_todo(todo_id):
+  todo_record = Entry.query.get(todo_id)
+  if todo_record is None:
+    return jsonify({'error': 'item not found in database'}), 400
+  else:
+    try:
+      db.session.delete(todo_record)
+      db.session.commit()
+      return jsonify({'deleted': todo_record.serialize()}), 200
+    except:
+      return jsonify({'error': 'Unable to delete items in database'}), 400
+    return
 
 
 if __name__ == "__main__":
