@@ -108,6 +108,33 @@ def create_task():
         errors.append("Unable to add items to database")
         return make_response(jsonify({'errors': errors}), 400)
 
+@application.route("/todos/<int:todo_id>", methods=['GET'])
+@crossdomain(origin='*')
+def get_todo(todo_id):
+    todo_record = Entry.query.get(todo_id)
+    if todo_record is not None:
+        return jsonify(todo_record.serialize()), 200
+    else:
+        abort(404)
+
+
+@application.route("/todos/<int:todo_id>", methods=['PUT'])
+@crossdomain(origin='*')
+def update_todo(todo_id):
+    if not request.json or not 'todo_name' in request.json or not 'todo_is_done' in request.json:
+      abort(400)
+    todo_record = Entry.query.get(todo_id)
+    if todo_record is not None:
+        todo_name = request.json['todo_name']
+        todo_is_done = request.json['todo_is_done']
+        todo_record.todo_name = todo_name
+        todo_record.todo_is_done = todo_is_done
+        db.session.commit()
+        return jsonify(todo_record.serialize()), 200
+    else:
+        abort(404)
+
+
 @application.route('/todos/<int:todo_id>', methods=['DELETE'])
 @crossdomain(origin='*')
 def delete_todo(todo_id):
