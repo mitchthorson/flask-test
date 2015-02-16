@@ -89,8 +89,8 @@ def get_all():
         record_list.append(record_obj)
     return jsonify(({'todos': record_list}));
 
-@application.route("/todos", methods=['POST'])
-@crossdomain(origin='*')
+@application.route("/todos", methods=['POST', 'OPTIONS'])
+@crossdomain(origin='*', headers='Content-Type')
 def create_task():
     if not request.json or not 'todo_name' in request.json:
         abort(400)
@@ -118,7 +118,7 @@ def get_todo(todo_id):
         abort(404)
 
 
-@application.route("/todos/<int:todo_id>", methods=['PUT'])
+@application.route("/todos/<int:todo_id>", methods=['PUT', 'OPTIONS'])
 @crossdomain(origin='*')
 def update_todo(todo_id):
     if not request.json or not 'todo_name' in request.json or not 'todo_is_done' in request.json:
@@ -135,7 +135,7 @@ def update_todo(todo_id):
         abort(404)
 
 
-@application.route('/todos/<int:todo_id>', methods=['DELETE'])
+@application.route('/todos/<int:todo_id>', methods=['DELETE', 'OPTIONS'])
 @crossdomain(origin='*')
 def delete_todo(todo_id):
   todo_record = Entry.query.get(todo_id)
